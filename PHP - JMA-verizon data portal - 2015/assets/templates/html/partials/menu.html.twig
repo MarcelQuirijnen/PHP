@@ -1,0 +1,131 @@
+<!-- Top Header Bar -->
+<div class="top-nav-bar">
+    <a href="#" id="collapseBtn">
+        <i class="fa fa-outdent" data-toggle='tooltip' ></i>
+        <i class="fa fa-indent" data-toggle='tooltip' ></i>
+    </a>
+    <!--<a href="#">
+        <i class="fa fa-search"></i>
+    </a>-->
+    <div class="top-bar-content">
+        <span><b>LAST LOGIN: </b>{{ php._SESSION.user.login_time }}</span>
+        <a href="#">
+            <i class="fa fa-question-circle"></i>
+        </a>
+    </div>
+</div>
+
+<!-- Sidebar Menu -->
+<div id="sidebar" class="affix" >
+    <img class="v-logo" src="/assets/images/vzportal/vzLogo.png" />
+    <img class="v-check" src="/assets/images/vzportal/vcheck.png" />
+
+    <!-- USER INFO -->
+    <div class="user-header">
+	    <div class="user-avatar">
+		    {% if php._SESSION.user.image > 0 %}
+			    <img src="{{ php._SESSION.rules.ProfileImageUpload }}{{ php._SESSION.user.image }}" alt="{{ php._SESSION.user.image }}">
+		    {% else %}
+			    <img src="/assets/images/vzportal/defaultUserImage.png">
+		    {% endif %}
+	    </div>
+        <div class="dropdown">
+            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                {{ php._SESSION.user.username }}
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="/admin/profile">Profile</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="/admin/logout">Sign Out</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!--  Menu Items  -->
+    <ul id="main-menu" class="nav nav-pills nav-stacked">
+        <li>
+            <a class="sub-label" href="/node/browser">
+                <icon class="fa fa-fw fa-server menu-icon" title='Node Browser' data-toggle='tooltip' data-container='body' data-placement='right'></icon>
+                <span>Node Browser</span>
+            </a>
+        </li>
+
+        <!-- continue fix -->
+        {% if ( php._SESSION.role == 'JMA-Admin') %}
+        <li class="submenu">
+            <a class="sub-label" href="#">
+                <icon class="fa fa-fw fa-gear menu-icon" title='Node Tools' data-toggle='tooltip' data-container='body' data-placement='right'></icon>
+                <span>Node Tools</span>
+                <icon class="fa fa-fw icon-caret fa-caret-left"></icon>
+                <icon class="fa fa-fw icon-caret fa-caret-down"></icon>
+            </a>
+            <ul>
+                <li>
+                   <a href="/node-tools/new" data-link="/node-tools/new">New Node</a>
+                </li>
+                <li>
+                   <a href="/node-tools/open">Incomplete Node</a>
+                </li>
+            </ul>
+        </li>
+        {% endif %}
+
+       <!-- continue fix -->
+       <!--{% if ( php._SESSION.role == 'JMA-Admin' ) %}
+        <li class="submenu">
+            <a class="sub-label" href="#">
+                <icon class="fa fa-fw fa-wrench menu-icon" title='Config Tools' data-toggle='tooltip' data-container='body'  data-placement='right'></icon>
+                <span>Config Tools</span>
+                <icon class="fa fa-fw icon-caret fa-caret-left"></icon>
+                <icon class="fa fa-fw icon-caret fa-caret-down"></icon>
+            </a>
+            <ul>
+                <li>
+                    <a href="/config">Template &amp; Config Manager</a>
+                </li>
+            </ul>
+        </li>
+       {% endif %}-->
+
+        <li class="submenu">
+            <a class="sub-label" href="#">
+                <icon class="fa fa-fw fa-file-text menu-icon" title='Reports' data-toggle='tooltip' data-container='body' data-placement='right'></icon>
+                <span>Reports</span>
+                <icon class="fa fa-fw icon-caret fa-caret-left"></icon>
+                <icon class="fa fa-fw icon-caret fa-caret-down"></icon>
+            </a>
+            <ul>
+                <li><a href="/reports/port-usage">Port Usage across Nodes</a></li>
+                <li><a href="/reports/ip-subnet-usage">IP Subnet Usage</a></li>
+                <li><a href="/reports/node-vsns">Node VSNs</a></li>
+                <li><a href="/reports/node-mop">Node MOP</a></li>
+                <li><a href="/reports/site-validation">Site Validation</a></li>
+                <li><a href="/reports/ter">Lab Test Exit Report</a></li>
+            </ul>
+        </li>
+
+        {% if ( php._SESSION.role == 'JMA-Admin') %}
+        <li>
+            <a class="sub-label" href="/admin/manage-users#tab_users">
+                <icon class="fa fa-fw fa-users menu-icon" title='User Management' data-toggle='tooltip' data-container='body' data-placement='right'></icon>
+                <span>User Management</span>
+            </a>
+        </li>
+        {% endif %}
+
+        {% if ( php._SESSION.role == 'JMA-Admin' ) %}
+        <li class="submenu">
+            <a class="sub-label" href="#">
+                <icon class="fa fa-fw fa-user menu-icon" title='Site Tools' data-toggle='tooltip' data-container='body' data-placement='right'></icon>
+                <span>Admin Tools</span>
+                <icon class="fa fa-fw icon-caret fa-caret-left"></icon>
+                <icon class="fa fa-fw icon-caret fa-caret-down"></icon>
+            </a>
+            <ul>
+                <li><a href='/admin-tools/master-tags'>Edit Master Tags</a></li>
+                <li><a href='/admin-tools/vsn-editor'>VSN Prototype Editor</a></li>
+            </ul>
+        </li>
+        {% endif %}
+    </ul>
+</div>

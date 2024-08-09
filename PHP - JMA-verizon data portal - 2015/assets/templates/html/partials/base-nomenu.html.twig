@@ -1,0 +1,14 @@
+{% include "html/partials/header.html.twig" %}
+{% block content %}{% endblock %}
+
+<div id="login-footer">
+	{#<div class="muted footer-text">&copy; {{ "now"|date('Y') }} Verizon and JMA | Privacy Policy | <a role="button" data-toggle="modal" href="#modal_about">About Us</a></div>#}
+	<div class="footer-content">
+		<div class="muted footer-text">&copy; {{ "now"|date('Y') }} <span>Verizon and JMA</span> | <a role="button" data-toggle="modal" href="#modal_about">About Us</a></div>
+	</div>
+	<!--<div class="legal">
+		<a href="#">Privacy Policy</a>
+	</div>-->
+</div>
+
+{% include "html/partials/aboutUsModal.html.twig" %}

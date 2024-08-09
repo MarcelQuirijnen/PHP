@@ -1,0 +1,303 @@
+{% extends "html/partials/base.html.twig" %}
+
+{% block content %}
+	<script type="text/javascript">
+
+		head.ready(["imgAreaSelect"], function () {
+
+			// Personal Profile Form
+/*
+			$("#ProfileForm .form-control").attr('disabled', true);
+			$("#EditProfile").show();
+			$("#UpdateProfile").hide();
+			$("#CancelEdit").hide();
+
+			$("#EditProfile").click(function () {
+				$("#ProfileForm .form-control").attr('disabled', false);
+				$(this).hide();
+				$("#UpdateProfile").show();
+				$("#CancelEdit").show();
+			});
+*/
+			$('#delete-button').click(function () {
+				$('#action').val('delete');
+				$('#ProfilePicForm').submit();
+			});
+			$('#mod-delete-button').click(function () {
+				$('#mod-action').val('delete');
+				$('#ProfilePicFormModal').submit();
+			});
+
+
+			$('#profilePic').imgAreaSelect({ aspectRatio: '1:1', handles: true, x1: 120, y1: 90, x2: 280, y2: 210 });
+		});
+
+        head.ready(function () {
+            $('#npassword').change(function () {
+                $('#passwd_entered').val( parseInt($('#passwd_entered').val())+1 );
+            });
+
+            $('#cpassword').change(function () {
+                $('#passwd_entered').val( parseInt($('#passwd_entered').val())+1 );
+            });
+
+            $('#UpdateProfile').click(function () {
+                if ($('#passwd_entered').val() == 1) {
+                    alert('Your password will not be updated.');
+                    //$('#error-msg-passwd').html('Your password will not be updated.');
+                } else if ($('#passwd_entered').val() == 2) {
+                    if ( !$('#password').val().length ) {
+                        //alert('Please specify your current password.');
+                        $('#error-msg-passwd').html('Please specify your current password.');
+                        return false;
+                    }
+                }
+                $('#passwd_entered').val(0);
+                $('#ProfileForm').submit();
+            });
+
+        });
+	</script>
+    <style>
+        .info-msg{
+            color: green;
+        }
+
+        .error-msg{
+            color: red;
+        }
+
+        .mandatory{
+            color:red;
+        }
+    </style>
+	<div id="content">
+		<div id="content-header">
+			<h1>User Profile</h1>
+		</div>
+		<div class="container-fluid">
+			<div class="widget-box">
+				<div class="widget-title">
+					<h5>User Profile</h5>
+				</div>
+
+				<div class="widget-content tab-content">
+					<div class="row-fluid">
+						<div id="avatarUpload" class="col-md-2">
+							<form  id="ProfilePicForm" enctype="multipart/form-data" action="/upload-profile-image" method="POST">
+								<a href="#edit-image" class="" role="button" data-toggle="modal">
+									{% if image == 0 %}
+										<img src="/assets/images/vzportal/user_image.png" alt="No image" width="100" height="100">
+									{% else %}
+										<img src="{{ php._SESSION.rules.ProfileImageUpload }}{{ image }}" alt="{{ image }}" width="100" height="100">
+									{% endif %}
+									<div data-toggle="modal" href="#modal_photo_upload" class="btn btn-upload"><icon class="fa fa-cloud-upload"></icon> Upload</div>
+								</a>
+
+								<div id="edit-image" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabelEI" aria-hidden="true">
+									<div class="modal-dialog">
+										<div class="modal-content">
+											<div class="modal-header">
+												<h3 class="modal-title">Edit Image</h3>
+												<div class="modal-close" data-dismiss="modal">
+													<icon class="glyphicon glyphicon-remove"></icon>
+												</div>
+											</div>
+											<div class="modal-body">
+												<div id="profilePic" class="col-md-7">
+													{% if image == 0 %}
+														<img src="/assets/images/vzportal/user_image.png" alt="No image">
+													{% else %}
+														<img class="img-responsive" src="{{ php._SESSION.rules.ProfileImageUpload }}{{ image }}" alt="{{ image }}">
+													{% endif %}
+												</div>
+												<div id="preview-image" class="col-md-5">
+													{% if image == 0 %}
+														<img src="/assets/images/vzportal/user_image.png" alt="No image" width="100" height="100">
+													{% else %}
+														<img src="{{ php._SESSION.rules.ProfileImageUpload }}{{ image }}" alt="{{ image }}" width="100" height="100">
+													{% endif %}
+													<br><br><br>
+													<h4>Image preview</h4>
+													<br><br>
+													<span>Image format: {{ php._SESSION.rules.ProfileImageSize }}</span><br>
+													<span>Image size: {{ php._SESSION.rules.ProfileImageExt }}.</span>
+
+													<form  id="ProfilePicFormModal" enctype="multipart/form-data" action="/upload-profile-image" method="POST">
+														<input type="file" name="fileToUpload" id="mod-fileToUpload">
+														<!-- default action = upload, change to 'delete' when Delete button clicked -->
+														<input type="hidden" name="action" id="mod-action" value="upload">
+														<button type="submit" id="mod-upload-button">Save</button>
+														<button id="mod-delete-button">Delete</button>
+													</form>
+
+													<p class="instructions">
+														Click and drag on the image to select an area.
+													</p>
+
+													<div class="error-msg" id="error-msg"></div>
+												</div>
+
+											</div>
+											{#<div class="modal-footer">
+
+											</div>#}
+										</div>
+									</div>
+								</div>
+
+								{#<div>
+									<input type="file" name="fileToUpload" id="fileToUpload">
+									<!-- default action = upload, change to 'delete' when Delete button clicked -->
+									<input type="hidden" name="action" id="action" value="upload">
+									<button type="submit" id="upload-button">Upload</button>
+									<button type="submit" id="delete-button">Delete</button>
+								</div>#}
+
+							</form>
+						</div>
+
+						<div id="UserForm" class="col-md-10">
+							<form id="ProfileForm" enctype="multipart/form-data" action="/admin/profile" method="POST">
+
+								<div class="btn-toolbar container-fluid">
+									<div class="btn-group">
+										<div class="sub-group">
+											<h4>User Information</h4>
+											<span class="note">Note: <span class="mandatory">*</span> These fields are required.</span><br>
+
+											<span class="error-msg">{{ message }}</span>
+										</div>
+										<div class="sub-group">
+											<button id="UpdateProfile" class="btn btn-success pull-right" type="submit"><i class="fa fa-save"></i> Save</button>
+											{#<button id="EditProfile" class="btn btn-success pull-right"><i class="fa fa-pencil"></i>Edit</button>#}
+											{#<button id="CancelEdit" onclick="window.location.reload(true); return false;" class="btn btn-default">Cancel</button>#}
+										</div>
+									</div>
+								</div>
+
+								<div class="controls">
+									<div class="form-group col-md-4">
+										<label>First Name:<span class="mandatory">*</span></label>
+										<input class="form-control" type="text" value="{{ user.firstname }}" name="firstname" id="firstname">
+									</div>
+									<div class="form-group col-md-4">
+										<label>Last Name:<span class="control-label mandatory">*</span></label>
+										<input class="form-control" type="text" value="{{ user.lastname }}" name="lastname" id="lastname">
+									</div>
+									<div class="form-group col-md-4">
+										<label>Username:<span class="mandatory">*</span></label>
+										<input class="form-control" type="text" value="{{ user.username }}" name="username" id="username">
+									</div>
+								</div>
+
+								<div class="controls">
+									<div class="form-group col-md-4">
+										<label>Contact Email:<span class="mandatory">*</span></label>
+										<input class="form-control" type="text" value="{{ user.email }}" name="email" id="email">
+									</div>
+
+									<div class="form-group col-md-4">
+										<label>Group:<span class="mandatory">*</span></label>
+										<select class="form-control btn-groups" id="btn-ugroups" name="usergroup">
+											{% for group in groups %}
+												{% if group == user.usergroup %}
+													<option id="option_{{ group }}" value="{{ group }}" selected>{{ group }}</option>
+												{% else %}
+													<option id="option_{{ group }}" value="{{ group }}">{{ group }}</option>
+												{% endif %}
+											{% endfor %}
+										</select>
+									</div>
+
+									<div class="form-group col-md-4">
+										<label>Role:<span class="mandatory">*</span></label>
+										<select class="form-control btn-roles" id="btn-roles" name="role">
+											{% for role in roles %}
+												{% if role == user.role %}
+													<option id="option_{{ role }}" value="{{ role }}" selected>{{ role }}</option>
+												{% else %}
+													<option id="option_{{ role }}" value="{{ role }}">{{ role }}</option>
+												{% endif %}
+
+											{% endfor %}
+										</select>
+									</div>
+								</div>
+
+								<div class="controls">
+									<div class="form-group col-md-6">
+										<label>Work Phone:<span class="mandatory">*</span></label>
+										<input class="form-control" name="workphone" type="text" value="{{ user.workphone }}" id="workphone">
+									</div>
+									<div class="form-group col-md-6">
+										<label>Cell Phone:</label>
+										<input class="form-control" type="text" value="{{ user.cellphone }}" name="cellphone">
+									</div>
+								</div>
+
+								<div class="controls">
+									<div class="form-group col-md-6">
+										<label>Address line 1:<span class="mandatory">*</span></label>
+										<input class="form-control" type="text" value="{{ user.Address1 }}" name="Address1" id="Address1" maxlength="50" size="50">
+									</div>
+									<div class="form-group col-md-6">
+										<label>Address line 2:</label>
+										<input class="form-control" type="text" value="{{ user.Address2 }}" name="Address2" id="Address2" maxlength="50" size="50">
+									</div>
+								</div>
+
+								<div class="controls">
+									<div class="form-group col-md-4">
+										<label>City:<span class="mandatory">*</span></label>
+										<input class="form-control" type="text" value="{{ user.City }}" name="City" id="City">
+									</div>
+
+									<div class="form-group col-md-4">
+										<label>State:<span class="mandatory">*</span></label>
+										<input class="form-control" type="text" maxlength="2" size="2" value="{{ user.State }}" id="State" name="State">
+									</div>
+
+									<div class="form-group col-md-4">
+										<label>Zip:<span class="mandatory">*</span></label>
+										<input class="form-control" type="text" size="5" maxlength="5" value="{{ user.Zip }}" id="Zip" name="Zip">
+									</div>
+								</div>
+
+								<br />
+
+								<div class="container-fluid">
+									<hr>
+									<h4>User Password</h4>
+									<span class="note">Note: <span class="mandatory">*</span> These fields are required to change your password.</span>
+									<div id="info-msg" class="info-msg">Password must be at least 8 characters long and use 1 uppercase letter, 1 lowercase letter and special character (such as 1,@,#,$,%,^)</div>
+								</div>
+								<br />
+								<div class="controls col-md-12 lr-padding">
+									<div class="form-group col-md-6">
+										<label>Current Password: <span class="mandatory">*</span></label>
+										<input class="form-control" type="password" id="password" name="password" placeholder="" value=""><br>
+									</div>
+								</div>
+								<div class="controls">
+									<div class="form-group col-md-6">
+										<label>New Password: <span class="mandatory">*</span></label>
+										<input class="form-control" type="password" id="npassword" name="npassword" placeholder="" value="">
+									</div>
+									<div class="form-group col-md-6">
+										<label>Confirm New Password: <span class="mandatory">*</span></label>
+										<input class="form-control" type="password" id="cpassword" name="cpassword" placeholder="" value="">
+									</div>
+                                    <input type="hidden" id="passwd_entered" name="passwd_entered" value="0">
+
+									<div id="error-msg-passwd" class="error-msg"></div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+{% endblock %}

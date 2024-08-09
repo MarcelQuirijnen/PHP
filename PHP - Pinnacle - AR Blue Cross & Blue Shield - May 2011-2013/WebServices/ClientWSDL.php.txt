@@ -1,0 +1,140 @@
+<?php
+
+// DOCUMENTATION : http://www.php.net/manual/en/book.soap.php
+
+require_once (dirname(__FILE__)."/../includes/auth.inc");
+require_once (dirname(__FILE__)."/../includes/config.inc");
+require_once (dirname(__FILE__)."/../includes/dbfunctions.inc");
+require_once (dirname(__FILE__).'/../includes/xml_functions.php');
+require_once (dirname(__FILE__)."/../includes/status.inc.php");
+
+ini_set('display_errors', true);
+ini_set("soap.wsdl_cache_enabled", "0");
+error_reporting(E_ALL);
+global $config;
+
+$client_options = array (
+  'soap_version'  =>  SOAP_1_2,
+  'trace'         =>  true,
+  'features'      =>  SOAP_SINGLE_ELEMENT_ARRAYS,
+  'compression'   =>  255
+//  'exceptions'          =>  true,
+//  'connection_timeout'  =>  9999,
+//  'encoding'            =>  'ISO-8859-1'
+);
+
+$uri = 'http://lrd1pwrdev/marcel/webservices/WSDL/power.wsdl';
+$workflow = 'PBSI_PWRQC';
+$rec_queue = $workflow.'_REC';
+
+
+//////////////////////////////////
+// Authentication
+//////////////////////////////////
+class SOAPAuth {
+  public $username;
+  public $password;
+
+  public function __construct($username, $password) {
+    $this->username = $username;
+    $this->password = $password;
+  }
+}
+
+$auth = new SOAPAuth($config['csw_login'], $config['csw_password']);
+//$auth = new SOAPAuth('somelogin', 'somepassword');
+$headers[] = new SOAPHeader('http://lrd1pwrdev/marcel/webservices', 'authenticate_user', $auth, false);
+
+
+//////////////////////////////////
+// Create Client and list all available API calls
+//////////////////////////////////
+$client = new SoapClient($uri, $client_options);
+echo '<strong>Available POWER services :</strong><br>';
+var_dump($client->__getFunctions());
+echo '<br><br>';
+
+//////////////////////////////////
+// Create POWER ticket
+//////////////////////////////////
+// so call one of those available services ...
+echo '<strong>Creating a new POWER ticket</strong><br>';
+echo '$ticket = $client->__soapCall(\'PWR_CreateTicket\', array(\'PBSI_PWRQC_REC\'), null, $headers)';
+$tckt = $client->__soapCall('PWR_CreateTicket', array($rec_queue), null, $headers);
+echo '<br><strong>Ticket created : '.$tckt.'</strong><br>';
+$ticket = trim($tckt);
+echo '<br>';
+
+//////////////////////////////////
+// LIST all control fields for a given workflow
+//////////////////////////////////
+echo '<strong>LIST control fields for '.$workflow.' workflow in which we created a new ticket:</strong><br>';
+echo '$client->__soapCall(\'PWR_CTRLFields\', array(\'LIST\', \''.$workflow.'\', null, null, null), null, $headers)';
+echo '<br>';
+$controlVars = array();
+$controlVars = $client->__soapCall('PWR_CTRLFields', array('LIST', $workflow, null, null, null), null, $headers);
+echo '<strong>Return array:</strong><br>';
+var_dump($controlVars);
+echo '<br><strong>PHP :</strong><br>';
+if (count($controlVars)) {
+    foreach($controlVars as $record) {
+      echo 'fi_Name: '.$record['fi_Name'].'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fi_ID: '.$record['fi_ID']."<br />\n";
+    }
+} else {
+  echo 'No Control Fields associated with this workflow('.$workflow.')<br>';
+}
+
+echo '<br><br>';
+
+//////////////////////////////////
+// GET the value of a given control variable (no arrays yet)
+//////////////////////////////////
+echo '<strong>GET value of \'SYSTEM\' control field for the newly created ticket</strong><br>';
+echo '$client->__soapCall(\'PWR_CTRLFields\', array(\'GET\',\''.$workflow.'\', \''.$ticket.'\', \'SYSTEM\', null), null, $headers)';
+echo '<br>';
+$someVar = array();
+$someVar = $client->__soapCall('PWR_CTRLFields', array('GET', $workflow, $ticket, 'SYSTEM', null), null, $headers);
+echo '<strong>Return array:</strong><br>';
+var_dump($someVar);
+echo '<br><strong>PHP :</strong><br>';
+if(count($someVar)) {
+  foreach($someVar as $record) {
+    echo 'someVar[\'fv_Value\'] ='.$record['fv_Value'].'<br>';
+  }
+}
+echo '* if nothing is shown, the variable is empty or not set<br>';
+echo '<br><br>';
+
+//////////////////////////////////
+// SET the value a given control variable (no arrays yet, nor group fields)
+//////////////////////////////////
+echo '<strong>SET control field : \'SYSTEM\' to \'FISS Tutor\' for the newly created ticket</strong><br>';
+echo '$client->__soapCall(\'PWR_CTRLFields\', array(\'SET\', \''.$workflow.'\', \''.$ticket.'\', \'SYSTEM\', \'FISS Tutor\'), null, $
+echo '<br>';
+$someVar = array();
+$someVar = $client->__soapCall('PWR_CTRLFields', array('SET', $workflow, $ticket, 'SYSTEM', 'FISS_Tutor'), null, $headers);
+echo '<strong>Return array:</strong>(0 means \'success\')<br>';
+var_dump($someVar);
+echo "<br><strong>Let's check our change :</strong><br>";
+echo '$someVar = $client->__soapCall(\'PWR_CTRLFields\', array(\'GET\', \''.$workflow.'\', \''.$ticket.'\', \'SYSTEM\', null), null,
+$someVar = $client->__soapCall('PWR_CTRLFields', array('GET', $workflow, $ticket, 'SYSTEM', null), null, $headers);
+echo '<br><strong>Return array:</strong><br>';
+var_dump($someVar);
+echo '<br><strong>PHP :</strong><br>';
+if(count($someVar)) {
+  foreach($someVar as $record) {
+    echo 'someVar[\'fv_Value\'] ='.$record['fv_Value'].'<br>';
+  }
+}
+
+echo '<br><br>';
+
+//////////////////////////////////
+// Check out the newly created ticket (POWER access required)
+//////////////////////////////////
+echo 'Checkout this new ticket : ';
+?>
+<a href="http://lrd1pwrdev/marcel/view_rec.php?co_ID=<?php echo $ticket; ?>&submit.x=0&submit.y=0"><?php echo $ticket; ?></a>
+<?php
+echo '&nbsp;&nbsp;(POWER access rights required!)';
+?>

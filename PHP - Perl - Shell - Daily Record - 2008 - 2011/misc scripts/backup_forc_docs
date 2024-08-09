@@ -1,0 +1,26 @@
+#!/bin/sh
+
+RSYNC=/usr/bin/rsync
+MAILER=/usr/bin/Mail
+RM=/bin/rm
+
+MAIL_LIST='support@xxx.com,marcel@xxx.com'
+KEY_FILE=/root/root-rsync-key
+
+# --archive = -a = -rlptgoD = default
+MODIFIED_ARCHIVE=rltgoDz
+RSYNC_PARAMS="-$MODIFIED_ARCHIVE --numeric-ids --recursive --update"
+#BACKUP_SERVER=192.168.55.71
+BACKUP_SERVER=xx.xx.xx.xx
+BACKUP_USER=root
+BACKUP_TARGET=/array/backups/new_forc6/foreclosures/
+
+BACKUP_SRC=/home/foreclosures/
+$RSYNC $RSYNC_PARAMS --rsh="ssh -i $KEY_FILE" $BACKUP_SRC $BACKUP_USER@$BACKUP_SERVER:$BACKUP_TARGET 2>/tmp/$$_rsync_errs
+
+if [ -s /tmp/$$_rsync_errs ] ; then
+   $MAILER -s 'forc6::backup_forc_docs problems : error while backing up Docs folder' $MAIL_LIST </tmp/$$_rsync_errs
+else
+   echo ' ' | $MAILER -s 'forc6::backup_forc_docs successful' $MAIL_LIST
+fi
+$RM -f /tmp/$$_rsync_errs

@@ -1,0 +1,75 @@
+{% extends "html/partials/base-nomenu.html.twig" %}
+
+{% block content %}
+<script>
+    head.load("/assets/css/unicorn.login.css");
+</script>
+<div class="login-page">
+    <div class="row-fluid login-container">
+        <div id="push"></div>
+        <div class="nopadding widget-box login-widget" id="logo">
+            <div class="widget-content">
+
+                <div class="widget-panel-left">
+                </div>
+
+                <div class="widget-panel-right">
+
+	                <div class="login-content active">
+                        <h1>LOG IN</h1>
+                        <form id="Login" name="Login" class="form-vertical" action="/admin/login?req={{ php._GET.req }}" method="post">
+
+                            <div class="control-group{% if username %} error{% endif %}">
+                                <div class="controls">
+                                    <div class="input-group">
+                                        <span class="input-group-addon" id="basic-addon1"><icon class="fa fa-user"></icon></span>
+                                        <input type="text" name="username" class="form-control" placeholder="Username" value="{{ username }}" aria-describedby="basic-addon1">
+                                    </div>
+                                    <div id="messageUserFail" class="user-message-fail">{{ messageUserFail }} <i class="fa fa-exclamation-triangle"></i></div>
+                                </div>
+                            </div>
+
+	                        <div class="control-group {% if password %} error{% endif %}">
+                                <div class="controls">
+                                    <div class="input-group">
+                                        <span class="input-group-addon" id="basic-addon2"><icon class="fa fa-lock"></icon></span>
+                                        <input type="password" name="password" class="form-control" placeholder="Password" aria-describedby="basic-addon2">
+                                    </div>
+                                    <div id="messagePWFail" class="user-password-fail">{{ messagePWFail }} <i class="fa fa-exclamation-triangle"></i></div>
+                                </div>
+                            </div>
+                            <div class="remember-helpers">
+                                <!--<input type="checkbox">Remember-->
+                                <a class="password-recovery" href="#PasswordRecovery">Forgot Password?</a>
+                            </div>
+                            <div id="messageRecoverFail" class="user-password-fail">{{ messageRecoverFail }} <i class="fa fa-exclamation-triangle"></i></div>
+                            <button type="submit" class="btn btn-danger" name="login-submit" value="Login">Sign In</button>
+                        </form>
+                    </div>
+
+                    <div class="forgot-content">
+                        <div class="login-back-btn">
+	                        <i class="fa fa-arrow-circle-o-left"></i><h4>Back to login.</h4>
+                        </div>
+	                        <h1>Forgot Password</h1>
+                        To regenerate your access credentials, please type in e-mail of your account.
+                        <form id="RecoverPassword" name="RecoverPassword" class="form-vertical" action="/admin/login?req={{ php._GET.req }}" method="post">
+                            <div class="control-group">
+                                <div class="controls">
+                                    <div class="input-group">
+                                        <span class="input-group-addon" id="basic-addon3"><icon class="fa fa-envelope"></icon></span>
+                                        <input type="text" name="email" class="form-control" placeholder="E-mail address" aria-describedby="basic-addon3" tabindex="-1">
+                                    </div>
+                                </div>
+	                            <div id="messageRecoverFail" class="recover-fail">{{ messageRecoverFail }}</div>
+                            </div>
+                            <button type="submit" class="btn btn-danger" name="recover-submit" value="Send" tabindex="-1">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+	</div>
+</div>
+
+{% endblock %}

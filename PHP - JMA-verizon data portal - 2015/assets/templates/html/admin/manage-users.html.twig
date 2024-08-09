@@ -1,0 +1,373 @@
+{% extends "html/partials/base.html.twig" %}
+
+{% block content %}
+	<script type="text/javascript">
+
+		head.ready(function () {
+			//validate email address
+			$('#email').change(function() {
+				if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(this.value)) {
+					$('#error-msg-addr').html('');
+					return true;
+				}
+				$('#error-msg-addr').html('Please enter a valid email address.');
+				return false;
+			});
+
+			// validate phone numbers
+			$('#workphone').change(function() {
+				var stripped = this.value.replace(/[\(\)\.\-\ ]/g, '');
+
+				if (isNaN(parseInt(stripped))) {
+					$('#error-msg-addr').html('The phone number contains illegal characters.');
+					return false;
+				} else if (!(stripped.length == 10)) {
+					$('#error-msg-addr').html('The phone number is the wrong length. Make sure you included an area code.');
+					return false;
+				}
+				$('#error-msg-addr').html('');
+				return true;
+			});
+			$('#cellphone').change(function() {
+				var stripped = this.value.replace(/[\(\)\.\-\ ]/g, '');
+
+				if (isNaN(parseInt(stripped))) {
+					$('#error-msg-addr').html('The phone number contains illegal characters.');
+					return false;
+				} else if (!(stripped.length == 10)) {
+					$('#error-msg-addr').html('The phone number is the wrong length. Make sure you included an area code.');
+					return false;
+				}
+				$('#error-msg-addr').html('');
+				return true;
+			});
+
+			//validate US states
+			$('#State').change(function() {
+				sstates = "wa|or|ca|ak|nv|id|ut|az|hi|mt|wy" +
+				"co|nm|nd|sd|ne|ks|ok|tx|mn|ia|mo" +
+				"ar|la|wi|il|ms|mi|in|ky|tn|al|fl" +
+				"ga|sc|nc|oh|wv|va|pa|ny|vt|me|nh" +
+				"ma|ri|ct|nj|de|md|dc";
+
+				if (sstates.indexOf(this.value.toLowerCase() + "|") == -1) {
+					$('#error-msg-addr').html('Please fill out a correct US state.');
+					return false;
+				}
+				$('#error-msg-addr').html('');
+				return true;
+			});
+
+			// validate zip code
+			$('#Zip').change(function() {
+				//var isValidZip = /(^\d{5}$)|(^\d{5}-\d{4}$)/.test(this.value);
+				if (/(^\d{5}$)/.test(this.value)) {
+					$('#error-msg-addr').html('');
+					return true;
+				} else {
+					$('#error-msg-addr').html('Please provide a valid 5 digit ZIP code.');
+					return true;
+				}
+			});
+		});
+
+
+		// when New User modal is closed
+		head.ready(function () {
+			$('#closeNU').click(function() {
+				//clear possible error messages
+				$('#error-msg-addr').html('');
+				$('#error-msg-passwd').html('');
+			});
+		});
+
+		// minimum amount of data entered clears the 'empty' flag on the form
+		head.ready(function () {
+			$('#username').change(function() {
+				//clear possible error messages
+				$('#manage-users').val('data entered');
+			});
+		});
+
+		// When roles select list is clicked
+		head.ready(function () {
+			$('.btn-roles').change(function() {
+				var str = this.value;
+				// split Admin_5 into Admin and 5 (role and user_id)
+				var splitstring = str.split('_');
+				var formSelector = "#UserRoles_" + splitstring[1];
+				var action_part1 = $(formSelector).attr("action");
+				//var action_part1 = '/admin/manage-users/change-role';  // code it in the form where it belongs
+				$(formSelector).attr("action", action_part1 + '/' + splitstring[1]+ '/' + splitstring[0]);
+				$(formSelector).submit();
+			});
+		});
+
+		// new user form submit
+		head.ready(function () {
+			$('#user-submit').click(function() {
+				var fname = $('#firstname').val();
+				var lname = $('#lastname').val();
+				var uname = $('#username').val();
+				var email = $('#email').val();
+				var ugroup = $('#btn-ugroups').val();
+				var role = $('#btn-roles').val();
+				var wphone = $('#workphone').val();
+				var addr1 = $('#Address1').val();
+				var city = $('#City').val();
+				var zip = $('#Zip').val();
+				var state = $('#State').val();
+
+				if (!addr1.length || !city.length || !state.length || !zip.length &&
+						!wphone.length || !email.length || !uname.length || !lname.length || !fname.length) {
+					$('#error-msg-addr').html('Please fill out ALL the required information.');
+					return false;
+				} else {
+					$('#error-msg-addr').html('');
+					return true;
+				}
+			});
+		});
+
+	</script>
+
+
+	<div id="content">
+		<div id="content-header">
+			<div class="row-fluid">
+				<h1 class="pull-left">User Management</h1>
+					  {#<a href="/admin/manage-users/asignment-management" class="pull-right btn btn-success"><icon class="fa fa-user"></icon>Assignments</a>
+					  <a href="/admin/manage-users/permission-management" class="pull-right btn btn-success"><icon class="fa fa-user"></icon>Permissions</a>
+					  <a href="/admin/manage-users/role-management" class="pull-right btn btn-success"><icon class="fa fa-user"></icon>Roles</a>#}
+				{% for message in messages %}
+					<div class="error-msg">{{ message }}</div>
+				{% endfor %}
+			</div>
+		</div>
+		<div class="container-fluid">
+			<div class="widget-box">
+				<div class="widget-content nopadding">
+					<div class="tab-content">
+						<div class="controls">
+							<div class="btn-toolbar">
+								<div class="btn-group">
+									<div class="sub-group">
+										{# Removed for Phase 2 #}
+										{#<div class="pull-left">
+											<select class="form-control selectpicker" id="userList" name="userList" >
+												<option value="All">All</option>
+											</select>
+										</div>#}
+									</div>
+									<div class="sub-group">
+
+										<button href="#user-add" class="btn btn-success pull-right" data-toggle="modal"><icon class="fa fa-user"></icon>Add User</button>
+									</div>
+								</div>
+							</div>
+
+							<table class="table table-bordered table-striped table-hover data-table">
+								<thead>
+									<tr>
+										<th>Name</th>
+										<th>Username</th>
+										<th>email</th>
+										<th>Phone Number</th>
+										<th>Roles</th>
+										<th>Activated</th>
+										<th>Action</th>
+									</tr>
+								</thead>
+								<tbody>
+								{% for user in users %}
+									<tr>
+										<td class="text-center">{{ user.FullName }}</td>
+										<td class="text-center">{{ user.username }}</td>
+										<td class="text-center">{{ user.email }}</td>
+										<td class="text-center">{{ user.workphone }}</td>
+
+										<td class="text-center">
+											<form id="UserRoles_{{ user.id }}" action="/admin/manage-users/change-role" enctype="multipart/form-data" method="POST">
+												<div class="btn-group btn-group-mini" id="roles" role="group" data-toggle="buttons2">
+													<select class="btn-roles" id="btn-roles" name="role">
+														{% for role in roles %}
+															{% if ( user.role == role ) %}
+																<option id="option_{{ role }}_{{ user.id }}" value="{{ role }}_{{ user.id }}" selected>{{ role }}</option>
+															{% else %}
+																{% if role == 'JMA-Admin' and user.flag == 1 %}
+																{% else %}
+																	<option id="option_{{ role }}_{{ user.id }}" value="{{ role }}_{{ user.id }}">{{ role }}</option>
+																{% endif %}
+															{% endif %}
+
+														{% endfor %}
+													</select>
+												</div>
+											</form>
+										</td>
+
+										<td class="text-center">
+											{% if user.activated  %}
+												<a href='/admin/manage-users/toggle-activated/{{ user.id }}' class='fa fa-toggle-on'></a>
+											{% else %}
+												<a href='/admin/manage-users/toggle-activated/{{ user.id }}' class='fa fa-toggle-off'></a>
+											{% endif %}
+										</td>
+
+										<td class="text-center">
+											<a href="#user-{{ user.id }}-Delete" class="btn btn-danger btn-mini" role="button" data-toggle="modal">Delete</a>
+
+											<div id="user-{{ user.id }}-Delete" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+												<div class="modal-dialog">
+													<div class="modal-content">
+														<div class="modal-header">
+															<h3 id="myModalLabel">Delete User {{ user.id }}</h3>
+														</div>
+														<div class="modal-body">
+															<p>Are you sure you want to delete user?</p>
+															<span>If you delete this user you will have to recreate the user profile.</span>
+														</div>
+														<div class="modal-footer">
+															<button class="btn btn-success" data-dismiss="modal" aria-hidden="true">No, Do not delete</button>
+															<a href="/admin/manage-users/delete/{{ user.id }}" class="btn btn-default">Yes, Delete user profile</a>
+														</div>
+														<div class="modal-close" data-dismiss="modal">
+															<icon class="glyphicon glyphicon-remove"></icon>
+														</div>
+													</div>
+												</div>
+											</div>
+										</td>
+									</tr>
+								{% endfor %}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="push"></div>
+
+		<div id="user-add" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabelUM" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h3 id="myModalLabel">Add User</h3>
+					</div>
+					<div class="modal-body">
+						{#<form  id="ProfilePicForm" enctype="multipart/form-data" action="/upload-profile-image" method="POST">
+							<a href="#edit-image" class="" role="button" data-toggle="modal"></a>#}
+
+						<div id="ProfilePicThumb" class="col-md-2">
+							<img src="/assets/images/vzportal/defaultUserImage.png" alt="No image" width="100" height="100"><br>
+						</div>
+
+
+						<div id="UserForm" class="col-md-10">
+							<form  id="NewUserForm" enctype="multipart/form-data" action="/admin/manage-users/new" method="POST">
+							<input type="hidden" name="manage-users" id="manage-users" value="empty">
+
+							<div class="btn-toolbar container-fluid">
+								<div class="btn-group">
+									<div class="sub-group">
+										<!-- User Information -->
+										<h4>User Information</h4>
+										<span class="note">Note: <span class="mandatory">*</span> These fields are required.</span><br>
+										<span class="error-msg">{{ message }}</span>
+									</div>
+									<div class="sub-group">
+										<button id="user-submit" class="btn btn-success pull-right" type="submit"><i class="fa fa-save"></i> Save</button>
+									</div>
+								</div>
+							</div>
+
+							<div class="controls">
+								<div class="form-group col-md-4">
+									<label>First Name:<span class="mandatory">*</span></label>
+									<input class="form-control" type="text" value="" name="firstname" id="firstname">
+								</div>
+								<div class="form-group col-md-4">
+									<label>Last Name:<span class="control-label mandatory">*</span></label>
+									<input class="form-control" type="text" value="" name="lastname" id="lastname">
+								</div>
+								<div class="form-group col-md-4">
+									<label>Username:<span class="mandatory">*</span></label>
+									<input class="form-control" type="text" value="" name="username" id="username">
+								</div>
+							</div>
+
+							<div class="controls">
+								<div class="form-group col-md-4">
+									<label>Contact Email:<span class="mandatory">*</span></label>
+									<input class="form-control" type="text" value="" name="email" id="email">
+								</div>
+								<div class="form-group col-md-4">
+									<label>Group:<span class="mandatory">*</span></label>
+									<select class="form-control btn-groups" id="btn-ugroups" name="usergroup">
+										{% for group in groups %}
+											<option id="option_{{ group }}" value="{{ group }}">{{ group }}</option>
+										{% endfor %}
+									</select>
+								</div>
+								<div class="form-group col-md-4">
+									<label>Role:<span class="mandatory">*</span></label>
+									<select class="form-control btn-roles" id="btn-roles" name="role">
+										{% for role in roles %}
+											<option id="option_{{ role }}" value="{{ role }}">{{ role }}</option>
+										{% endfor %}
+									</select>
+								</div>
+							</div>
+
+							<div class="controls">
+								<div class="form-group col-md-6">
+									<label>Work Phone:<span class="mandatory">*</span></label>
+									<input class="form-control" name="workphone" type="text" value="" id="workphone">
+								</div>
+								<div class="form-group col-md-6">
+									<label>Cell Phone:</label>
+									<input class="form-control" type="text" value="" name="cellphone">
+								</div>
+							</div>
+
+							<div class="controls">
+								<div class="form-group col-md-6">
+									<label>Address line 1:<span class="mandatory">*</span></label>
+									<input class="form-control" type="text" value="" name="Address1" id="Address1" maxlength="50" size="50">
+								</div>
+								<div class="form-group col-md-6">
+									<label>Address line 2:</label>
+									<input class="form-control" type="text" value="" name="Address2" id="Address2" maxlength="50" size="50">
+								</div>
+							</div>
+
+							<div class="controls">
+								<div class="form-group col-md-4">
+									<label>City:<span class="mandatory">*</span></label>
+									<input class="form-control" type="text" value="" name="City" id="City">
+								</div>
+
+								<div class="form-group col-md-4">
+									<label>State:<span class="mandatory">*</span></label>
+									<input class="form-control" type="text" maxlength="2" size="2" value="" id="State" name="State">
+								</div>
+
+								<div class="form-group col-md-4">
+									<label>Zip:<span class="mandatory">*</span></label>
+									<input class="form-control" type="text" size="5" maxlength="5" value="" id="Zip" name="Zip">
+								</div>
+							</div>
+						</form>
+							<div class="error-msg" id="error-msg-addr"></div>
+						</div>
+					</div>
+					<div class="modal-footer"></div>
+					<div class="modal-close" data-dismiss="modal">
+						<icon class="glyphicon glyphicon-remove"></icon>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

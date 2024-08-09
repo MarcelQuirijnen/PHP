@@ -1,0 +1,39 @@
+{% extends "html/partials/base.html.twig" %}
+
+{% block content %}
+<script>
+    head.ready(["jquery", "datatables_editor"], function() {
+        head.load("{{ javascript }}");
+    });
+</script>
+
+<div id="content">
+    <div id="content-header">
+        <div class="row-fluid">
+            <h1 class="pull-left" id="site-header">Register Portal User Permissions</h1>
+            <div class="pull-right btn-toolbar">
+                <!-- to do audit trail -->
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row-fluid">
+
+            <div id="permissions_tbl_display" name="permissions_tbl_display">
+                <!-- datatables needs a table, not a div -->
+                <table class="table table-bordered table-hover fixed-table" id="permissions_tbl">
+                    <thead>
+                    <tr>
+                            <th>Permission Description</th>
+                            <th>Edit By</th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+

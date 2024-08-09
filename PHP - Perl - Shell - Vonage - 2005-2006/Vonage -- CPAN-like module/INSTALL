@@ -1,0 +1,6 @@
+Install :
+   perl Makefile.PL
+   make && make install
+
+Note : I suppose you noticed there is no 'make test'. 
+       Go ahead, write it if it's needed.

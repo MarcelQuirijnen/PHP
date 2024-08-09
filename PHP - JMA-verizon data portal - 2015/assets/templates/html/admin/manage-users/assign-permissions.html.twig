@@ -1,0 +1,62 @@
+{% extends "html/partials/base.html.twig" %}
+
+{% block content %}
+    <div id="content">
+        <div id="content-header">
+            <h1 class="pull-left">Assign User Permissions to User Roles</h1>
+        </div>
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div id="push"></div>
+                <div class="span4 offset3 widget-box">
+                    <div class="widget-title"><h5>Selection Details:</h5></div>
+                    <div class="widget-content">
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <div id="message" class="text-center">{{ message2 }}</div><div id="push"></div>
+                                <div id="push"></div>
+                                <form id="Assignments" action="/admin/manage-users/asignment-management" method="POST">
+                                    <fieldset>
+                                        <div class="text-center control-group">
+                                            <div class="controls">
+                                                <label><span>Select Role</span>
+                                                    <select class="no-margin" id="role" name="role" >
+                                                        {% for role in roles %}
+                                                            <option value="{{ role }}">{{ role }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="text-center control-group">
+                                            <div class="controls">
+                                                <label><span>Select Permission</span>
+                                                    <select class="no-margin" id="permission" name="permission" >
+                                                        {% for permission in perms %}
+                                                            <option value="{{ permission }}">{{ permission }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="text-center control-group">
+                                            <div class="controls">
+                                                <label><span>Remove Permission assignment</span>
+                                                <input type="checkbox" name="removeperm" value="remove"></label>
+                                            </div>
+                                        </div>
+                                        <div id="push"></div>
+                                        <div>
+                                            <br><div class="pull-left" id="message">{{ message }}</div>
+                                            <span class="pull-right"><input type="submit" class="btn btn-inverse" value="Assign" /></span>
+                                        </div>
+                                    </fieldset>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

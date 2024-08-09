@@ -1,0 +1,11 @@
+Vonage.pm is created by Production Call Processing in order to make their lives easier.
+The Perl module contains some very frequently used functions and credentials, namely :
+	Hop2Host : from your current host, hop to the specified host, 
+                   using Linus as the in between host and use the
+                   given credentials.
+	Cp2Host  : vonage version of scp, copy file to host, hopping through linus
+	HopBackHome : Return from the hopped-to-host and close all connections
+
+	MAILER : Results are usually mailed. Use the specfied mailer for this.
+	MAIL_LIST : send the result to people in this list.
+

@@ -1,0 +1,20 @@
+        <div id="footer">
+            {#<div class="muted footer-text">&copy; {{ "now"|date('Y') }} Verizon and JMA | Privacy Policy | <a role="button" data-toggle="modal" href="#modal_about">About Us</a></div>#}
+            <div class="muted footer-text">&copy; {{ "now"|date('Y') }} Verizon and JMA | <a role="button" data-toggle="modal" href="#modal_about">About Us</a></div>
+
+            <!--<div class="legal">
+                <a href="#">Privacy Policy</a>
+            </div>-->
+        </div>
+        </div>
+        </div>
+        <!-- // #wrap -->
+        <span class="icon scrollup"><icon class="fa fa-fw fa-arrow-circle-up"></icon></span>
+
+        {% include "html/partials/aboutUsModal.html.twig" %}
+
+        <script>
+            head.ready(function() { check_collapse(); });
+        </script>
+    </body>
+</html>

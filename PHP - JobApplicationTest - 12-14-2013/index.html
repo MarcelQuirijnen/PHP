@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Colors</title>
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+<meta name="author" CONTENT="Marcel Quirijnen, marcel@marcelq.com">
+<meta name="subject" CONTENT="job application PHP - AJAX test">
+<script src="includes/jquery-2.0.3.min.js"></script>
+<link rel="stylesheet" type="text/css" href="JobApplicationTestStyles.css" media="screen" />
+</head>
+<body>
+<div id="container"> <!-- center the whole page -->
+<h1>Colors</h1>
+<p>Click on the color name to see how many votes for that color.<br>
+When you do click on TOTAL, the sum of the above numbers will show.
+</p>
+
+<!-- makes my life a bit easier when totalling up votes -->
+<div id="NoofColors" class="hiddenarea"></div>
+
+<!-- this area will hold the whole color-vote table -->
+<div id="ColorList"></div>
+
+
+<script>
+
+/////
+// Total up all votes when Total-link is clicked
+/////	
+function calcTotal()
+{
+	var totalVotes = 0;
+	var colorCount = $('#NoofColors').text();
+	for (i=1; i <= colorCount; i++) {
+	   totalVotes = totalVotes + Number($('#val'+i).text());
+    }
+    $('#GrandTotal').text(totalVotes);
+}
+
+/////
+// get the amount of votes for the clicked color link
+/////	
+function getVotes(colorID)
+{
+    $.post( "get_votes.php", { colorid: colorID }, function( data ) {
+      //console.log( data[0].SumVotes );
+      val_var = 'val' + colorID;
+      $('#'+val_var).html(data[0].SumVotes);
+    }, "json" );
+}
+
+$(document).ready(function() {
+  // show all colors upon page display
+  $.ajax({
+    url: 'get_colors.php',
+    data: "",
+    dataType: 'json',
+    success: function(data)
+    {
+      //console.log(data);
+      var rowstr = '';
+      $('#NoofColors').text(data.length); // makes it easier to total up votes
+      
+      // Display each data row - color and votes value placeholder
+      $.each(data, function(index, value) { 
+         rowstr =  rowstr + '<tr>' +
+                            '<td><a href="#" onclick="getVotes('+value.col_ID+');">'+value.col_name+'</a></td>' +
+                            '<td><span id="val'+value.col_ID+'"></span></td>'+
+                            '</tr>';
+      });
+      // table and table header html
+      tablestr = '<table id="ColorVote">';
+      tablestr = tablestr + '<thead><tr><th>Color</th><th>Votes</th></tr></thead><tbody>';
+      // table total html
+      tableTotalstr = '<tr>' + 
+                      '  <td><a href="#" onclick="calcTotal();">TOTAL</a></td>' + 
+                      '  <td><span id="GrandTotal"></span></td>' + 
+                      '</tr>';
+      endtablestr = '</tbody></table>';
+      
+      // Show the data table
+      $('#ColorList').html(tablestr + rowstr + tableTotalstr + endtablestr);
+      
+      // alternate colors of the table row
+      $('#ColorVote tr:odd').css("background-color", "LightBlue");
+      $('#ColorVote tr:even').css("background-color", "LightYellow");
+      
+    },
+    failure: function(data)
+    { 
+      var json = $.parseJSON(data); alert(json.message);
+    }
+
+  });
+  
+});
+</script>
+</div>
+</body>
+
+</html>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="POWERWEB"
+ targetNamespace="urn:PBSIPOWER"
+ xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+ xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+ xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+ xmlns:tns="urn:PBSIPOWER"
+ xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+ xmlns="http://schemas.xmlsoap.org/wsdl/">
+ <types>
+  <schema xmlns="http://www.w3.org/2001/XMLSchema"
+   targetNamespace="urn:PBSIPOWER"
+   xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+   xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/">
+   <complexType name="ArrayOfString">
+    <xsd:sequence>
+      <xsd:element name="value" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+   </complexType>
+  </schema>
+ </types>
+ <message name="PWRTicketRequest">
+  <part name="reqParam" type="xsd:string"/>
+ </message>
+ <message name="PWRTicketResponse">
+  <part name="resParam" type="xsd:string"/>
+ </message>
+ <message name="PWRFieldRequest">
+  <part name="operation" type="xsd:string"/>
+  <part name="workflow" type="xsd:string"/>
+  <part name="ticket" type="xsd:string"/>
+  <part name="ctrlvar" type="xsd:string"/>
+  <part name="ctrlvarval" type="xsd:string"/>
+ </message>
+ <message name="PWRFieldResponse">
+  <part name="resParam" type="tns:ArrayOfString"/>
+ </message>
+ <portType name="PWRPortType">
+  <operation name="PWR_CreateTicket">
+   <input message="tns:PWRTicketRequest"/>
+   <output message="tns:PWRTicketResponse"/>
+  </operation>
+  <operation name="PWR_CTRLFields">
+   <input message="tns:PWRFieldRequest"/>
+   <output message="tns:PWRFieldResponse"/>
+  </operation>
+ </portType>
+ <binding name="PWRBinding" type="tns:PWRPortType">
+  <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+  <operation name="PWR_CreateTicket">
+   <soap:operation soapAction="urn:PWR#cr-ticket"/>
+   <input>
+    <soap:body use="encoded" namespace="urn:PWR-cr" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+   </input>
+   <output>
+    <soap:body use="encoded" namespace="urn:PWR-cr" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+   </output>
+  </operation>
+  <operation name="PWR_CTRLFields">
+   <soap:operation soapAction="urn:PWR#ctrl-vals"/>
+   <input>
+    <soap:body use="encoded" namespace="urn:PWR-ctrl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+   </input>
+   <output>
+    <soap:body use="encoded" namespace="urn:PWR-ctrl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+   </output>
+  </operation>
+ </binding>
+ <service name="PBSIPOWERWEB">
+  <documentation>PBSI POWER Web Communication using SOAP</documentation>
+  <port name="PWRPort" binding="tns:PWRBinding">
+   <soap:address location="http://lrd1pwrdev/marcel/webservices/ServerWSDL.php"/>
+  </port>
+ </service>
+</definitions>

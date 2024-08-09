@@ -1,0 +1,20 @@
+#!/bin/sh
+
+RSYNC=/usr/bin/rsync
+RSYNC_OPTIONS='-rltgoD --numeric-ids --recursive --update'
+#FTP_HOST=192.168.55.145
+FTP_HOST=xx.xx.xx.xx
+
+cd /array/home/docindexer/di/dist
+for years in 2004 2005 2006 2007 2008 ; do
+   for dirs in `find . -name "${years}_*" -type d -print` ; do
+      $RSYNC $RSYNC_OPTIONS -e "ssh -i /root/.ssh/id_rsa" $BACKUP_DIR $FTP_HOST:/home/DRdata/backup/${years}/ 2>/tmp/rsync_$$_errs
+   done
+   if [ -s /tmp/rsync_$$_errs ] ; then
+      /usr/bin/Mail -s "rsync FAIL : $years -> new virtbox .. continueing" admins </tmp/rsync_$$_errs
+      rm -rf /tmp/rsync_$$_errs
+   else
+      echo '' | /usr/bin/mail -s "rsync SUCCESS : $years -> new virtbox" admins
+   fi
+done
+echo '' | /usr/bin/mail -s 'rsync years 2004-2008 to new virtbox : DONE' admins
